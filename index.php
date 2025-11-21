@@ -3,6 +3,13 @@
 <head>
   <meta charset="utf-8">
   <title>Listings</title>
+    <style>
+    table { border-collapse: collapse; width: 100%; }
+    td, th { border: 1px solid #ccc; padding: 6px; vertical-align: top; }
+    img.thumb { width: 150px; height: auto; }
+    .pager a { margin: 0 4px; text-decoration: none; }
+    .pager .current { color: red; font-weight: bold; }
+  </style>
 </head>
 <body>
 
