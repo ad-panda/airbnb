@@ -27,20 +27,20 @@
 
 <form method="get" id="sortForm">
   Trier par :
-  <select name="sort" onchange="document.getElementById('sortForm').submit()">
-    <option value="name" <?= $sort==='name' ? 'selected' : '' ?>>Nom</option>
-    <option value="neighbourhood_group_cleansed" <?= $sort==='neighbourhood_group_cleansed' ? 'selected' : '' ?>>Ville</option>
-    <option value="price" <?= $sort==='price' ? 'selected' : '' ?>>Prix</option>
-    <option value="host_name" <?= $sort==='host_name' ? 'selected' : '' ?>>Proprio</option>
-  </select>
-
-  <select name="order" onchange="document.getElementById('sortForm').submit()">
-    <option value="asc" <?= $order==='asc' ? 'selected' : '' ?>>asc</option>
-    <option value="desc" <?= $order==='desc' ? 'selected' : '' ?>>desc</option>
-  </select>
-
+<select name="sort">
+<option value="name" <?= $sort==='name' ? 'selected' : '' ?>>Nom</option>
+<option value="neighbourhood_group_cleansed" <?= $sort==='neighbourhood_group_cleansed' ? 'selected' : '' ?>>Ville</option>
+<option value="price" <?= $sort==='price' ? 'selected' : '' ?>>Prix</option>
+<option value="host_name" <?= $sort==='host_name' ? 'selected' : '' ?>>Propriétaire</option>
+</select>
+ 
+  <select name="order">
+<option value="asc" <?= $order==='asc' ? 'selected' : '' ?>>asc</option>
+<option value="desc" <?= $order==='desc' ? 'selected' : '' ?>>desc</option>
+</select>
+ 
   <input type="hidden" name="page" value="<?= intval($page) ?>">
-  <noscript><button type="submit">OK</button></noscript>
+<button type="submit">Trier</button>
 </form>
 
 <hr>
