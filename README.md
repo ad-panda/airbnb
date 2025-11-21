@@ -18,4 +18,4 @@ description :
 
 Site type airbnb, avec des annonces max 10 par pages et un formulaire present pour poster une annonce.
 
-possibiliter de trier grace a des input type 
+possibiliter de trier grace a des input deroulant et un bouton.
