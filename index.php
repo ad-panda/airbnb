@@ -1,13 +1,85 @@
 <?php
+require_once "config.php";
 
+$sort = $_GET['sort'] ?? 'name';
+$order = $_GET['order'] ?? 'asc';
 
+$allowedSort = ['name','neighbourhood_group_cleansed','price','host_name'];
+if (!in_array($sort, $allowedSort)) {
+    die("Invalid sort");
+}
+if (!in_array($order, ['asc','desc'])) {
+    die("Invalid order");
+}
 
-/* faut mettre le truc php blablablablabla) */
+$errors = [];
+$success = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add'])) {
+    $name = trim($_POST['name'] ?? '');
+    $picture_url = trim($_POST['picture_url'] ?? '');
+    $host_name = trim($_POST['host_name'] ?? '');
+    $price = trim($_POST['price'] ?? '');
+    $city = trim($_POST['neighbourhood_group_cleansed'] ?? '');
+    $review = trim($_POST['review_scores_value'] ?? '');
 
+    if ($name === '') $errors[] = "Le nom est requis.";
+    if ($picture_url === '') $errors[] = "L'URL de l'image est requise.";
+    if ($host_name === '') $errors[] = "Le nom du propriétaire est requis.";
+    if ($price === '' || !is_numeric($price)) $errors[] = "Le prix doit être un nombre.";
+    if ($review !== '' && !is_numeric($review)) $errors[] = "Le score de review doit être numérique si renseigné.";
+
+    if (empty($errors)) {
+      
+        $idStmt = $dbh->query("SELECT MAX(id) AS m FROM listings");
+        $max = $idStmt->fetchColumn();
+        $newId = $max !== null ? intval($max) + 1 : 1;
+
+        $sth = $dbh->prepare("
+            INSERT INTO listings (id, name, picture_url, host_name, host_thumbnail_url, price, neighbourhood_group_cleansed, review_scores_value)
+            VALUES (:id, :name, :picture_url, :host_name, :host_thumbnail_url, :price, :city, :review)
+        ");
+
+        $host_thumb = $host_name !== '' ? '' : '';
+        $sth->execute([
+            ':id' => $newId,
+            ':name' => $name,
+            ':picture_url' => $picture_url,
+            ':host_name' => $host_name,
+            ':host_thumbnail_url' => $host_thumb,
+            ':price' => (int)$price,
+            ':city' => $city,
+            ':review' => $review === '' ? null : (float)$review
+        ]);
+        $success = "Annonce ajoutée avec succès.";
+
+        header("Location: ?page=1&sort=" . urlencode($sort) . "&order=" . urlencode($order));
+        exit;
+    }
+}
+
+$limit = 10;
+$page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+$offset = ($page - 1) * $limit;
+
+$countSql = "SELECT COUNT(*) FROM listings";
+$countStmt = $dbh->prepare($countSql);
+$countStmt->execute();
+$total = (int)$countStmt->fetchColumn();
+$totalPages = max(1, ceil($total / $limit));
+
+$sql = "SELECT * FROM listings ORDER BY $sort $order LIMIT :limit OFFSET :offset";
+$sth = $dbh->prepare($sql);
+$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
+$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+$sth->execute();
+$data = $sth->fetchAll();
+
+function h($s) {
+    return htmlspecialchars((string)$s, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+}
 
 
 ?>
-
 <!doctype html>
 <html>
 <head>
